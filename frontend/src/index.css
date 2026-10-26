@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body { @apply bg-ink-950 text-gray-200 antialiased; }
+:focus-visible { @apply outline outline-2 outline-offset-2 outline-accent; }
+.btn { @apply inline-flex items-center gap-1.5 rounded-md border border-ink-600 bg-ink-800 px-3 py-1.5 text-sm hover:bg-ink-700 disabled:opacity-50 disabled:cursor-not-allowed; }
+.btn-primary { @apply border-accent-dim bg-accent-dim text-white hover:bg-accent; }
+.card { @apply rounded-lg border border-ink-700 bg-ink-900; }
+.input { @apply w-full rounded-md border border-ink-600 bg-ink-950 px-3 py-1.5 text-sm placeholder:text-gray-500; }
+
+::selection { background: rgb(63 185 80 / 0.3); }
+* { scrollbar-width: thin; scrollbar-color: #3a4048 transparent; }
+.btn { transition: background-color 120ms; }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
