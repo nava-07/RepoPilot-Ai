@@ -147,16 +147,23 @@ class RepoService:
         return self._inspect_repo(target_dir, name=f"{owner}/{repo_name}", source_type="github")
 
     def _inspect_repo(self, path: Path, name: str, source_type: str) -> dict[str, Any]:
-        """Discover languages, default branch, and file count."""
+        """Discover languages, default branch, current commit, and file count."""
         branch = "main"
-        # Try getting git branch
+        commit = None
+        # Try getting git branch and commit
         try:
             res = subprocess.run(
-                ["git", "-C", str(path), "rev-parse", "--abbrev-ref", "HEAD"],
+                ["git", "-c", "safe.directory=*", "-C", str(path), "rev-parse", "--abbrev-ref", "HEAD"],
                 capture_output=True, text=True, timeout=5, check=False,
             )
             if res.returncode == 0 and res.stdout.strip():
                 branch = res.stdout.strip()
+            res_c = subprocess.run(
+                ["git", "-c", "safe.directory=*", "-C", str(path), "rev-parse", "HEAD"],
+                capture_output=True, text=True, timeout=5, check=False,
+            )
+            if res_c.returncode == 0 and res_c.stdout.strip():
+                commit = res_c.stdout.strip()
         except Exception:
             pass
 
@@ -180,6 +187,7 @@ class RepoService:
             "source_type": source_type,
             "local_path": str(path),
             "default_branch": branch,
+            "current_commit": commit,
             "languages": sorted(list(languages_set)),
             "file_count": file_count,
         }

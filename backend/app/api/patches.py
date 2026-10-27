@@ -8,9 +8,11 @@ router = APIRouter(prefix="/patches", tags=["patches"])
 
 
 @router.get("", response_model=list[PatchResponse])
-async def list_patches(request: Request) -> list[PatchResponse]:
-    """List all proposed patches and their approval/validation statuses."""
-    patches = request.app.state.db.list_patches()
+async def list_patches(
+    request: Request, repository_id: str | None = None
+) -> list[PatchResponse]:
+    """List proposed patches, optionally filtered by repository."""
+    patches = request.app.state.db.list_patches(repository_id=repository_id)
     return [PatchResponse(**p) for p in patches]
 
 

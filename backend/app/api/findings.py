@@ -8,9 +8,15 @@ router = APIRouter(prefix="/findings", tags=["findings"])
 
 
 @router.get("", response_model=list[FindingResponse])
-async def list_findings(request: Request) -> list[FindingResponse]:
-    """List all findings across investigations."""
-    findings = request.app.state.db.list_findings()
+async def list_findings(
+    request: Request,
+    repository_id: str | None = None,
+    investigation_id: str | None = None,
+) -> list[FindingResponse]:
+    """List all findings across investigations, optionally filtered by repository or investigation."""
+    findings = request.app.state.db.list_findings(
+        repository_id=repository_id, investigation_id=investigation_id
+    )
     return [FindingResponse(**f) for f in findings]
 
 

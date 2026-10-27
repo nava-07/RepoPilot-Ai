@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Check, FlaskConical, ShieldCheck, X, Download } from "lucide-react";
 import { ApiError, post } from "../api";
 import { useApi } from "../hooks";
+import { useRepo } from "../context/RepoContext";
 import type { Patch, TestRun } from "../types";
 import { Async, Badge, Empty, ErrorBox, PageHeader } from "../components/ui";
 import { DiffView } from "../components/DiffView";
@@ -14,7 +15,9 @@ function download(name: string, text: string) {
 }
 
 export default function Patches() {
-  const list = useApi<Patch[]>("/patches");
+  const { activeRepo } = useRepo();
+  const endpoint = activeRepo ? `/patches?repository_id=${activeRepo.id}` : "/patches";
+  const list = useApi<Patch[]>(endpoint);
   const toast = useToast();
   const [err, setErr] = useState<ApiError | null>(null);
   const [busy, setBusy] = useState<string | null>(null);

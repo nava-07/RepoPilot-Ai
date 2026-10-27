@@ -26,6 +26,8 @@ You MUST respond with valid JSON matching this schema:
       "line_end": 15,
       "evidence": "Exact code snippet showing the issue",
       "explanation": "Clear explanation of what is wrong and why",
+      "root_cause": "Detailed mechanistic explanation of the underlying root cause",
+      "impact": "Affected functions, components, or user-visible behaviors",
       "suggested_fix": "Smallest reasonable correction",
       "confidence": "high" | "medium" | "low"
     }

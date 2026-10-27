@@ -11,7 +11,9 @@ from app.config import Settings, get_settings
 from app.database import Database
 from app.errors import AppError, app_error_handler
 from app.services.analysis_service import AnalysisService
+from app.services.change_intelligence_service import ChangeIntelligenceService
 from app.services.gemini import GeminiClient
+from app.services.git_service import GitService
 from app.services.ollama import OllamaClient
 from app.services.patch_service import PatchService
 from app.services.repo_service import RepoService
@@ -38,9 +40,13 @@ def create_app(
         db_path = settings.data_dir / "repopilot.sqlite3"
         app.state.db = Database(db_path)
         app.state.repo_service = RepoService(settings.data_dir, settings.authorized_root_list)
+        app.state.git_service = GitService(app.state.repo_service)
         app.state.analysis_service = AnalysisService(app.state.ollama, app.state.gemini)
         app.state.patch_service = PatchService(app.state.ollama, app.state.gemini)
         app.state.test_service = TestService(app.state.patch_service)
+        app.state.change_intelligence_service = ChangeIntelligenceService(
+            app.state.ollama, app.state.gemini, app.state.git_service, app.state.repo_service
+        )
 
         skills_dir = Path(__file__).resolve().parent.parent / "skills"
         app.state.skills_service = SkillsService(skills_dir)

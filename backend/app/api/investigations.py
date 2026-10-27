@@ -8,10 +8,12 @@ router = APIRouter(tags=["investigations"])
 
 
 @router.get("/investigations", response_model=list[InvestigationResponse])
-async def list_investigations(request: Request) -> list[InvestigationResponse]:
+async def list_investigations(
+    request: Request, repository_id: str | None = None
+) -> list[InvestigationResponse]:
     """List all completed and ongoing investigations."""
-    investigations = request.app.state.db.list_investigations()
-    all_findings = request.app.state.db.list_findings()
+    investigations = request.app.state.db.list_investigations(repository_id=repository_id)
+    all_findings = request.app.state.db.list_findings(repository_id=repository_id)
 
     findings_by_inv: dict[str, list] = {}
     for f in all_findings:
@@ -93,6 +95,8 @@ async def analyze_repository(
                 evidence=f.get("evidence", ""),
                 explanation=f.get("explanation"),
                 suggested_fix=f.get("suggested_fix"),
+                root_cause=f.get("root_cause"),
+                impact=f.get("impact"),
                 confidence=f.get("confidence", "medium"),
             )
             findings_resp.append(FindingResponse(**created_finding))

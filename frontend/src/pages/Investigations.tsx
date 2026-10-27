@@ -1,14 +1,23 @@
-import { useState, type FormEvent, type ChangeEvent } from "react";
+import { useState, useEffect, type FormEvent, type ChangeEvent } from "react";
 import { ImagePlus, Play, X } from "lucide-react";
 import { ApiError, post } from "../api";
 import { useApi } from "../hooks";
+import { useRepo } from "../context/RepoContext";
 import type { Investigation, Repository } from "../types";
 import { Async, Badge, Empty, ErrorBox, PageHeader } from "../components/ui";
 
 export default function Investigations({ go }: { go: (r: string) => void }) {
-  const list = useApi<Investigation[]>("/investigations");
+  const { activeRepo } = useRepo();
+  const endpoint = activeRepo ? `/investigations?repository_id=${activeRepo.id}` : "/investigations";
+  const list = useApi<Investigation[]>(endpoint);
   const repos = useApi<Repository[]>("/repositories");
-  const [repoId, setRepoId] = useState("");
+  const [repoId, setRepoId] = useState(activeRepo?.id || "");
+
+  useEffect(() => {
+    if (activeRepo) {
+      setRepoId(activeRepo.id);
+    }
+  }, [activeRepo?.id]);
   const [question, setQuestion] = useState("");
   const [imageBase64, setImageBase64] = useState<string | null>(null);
   const [imageName, setImageName] = useState<string | null>(null);
